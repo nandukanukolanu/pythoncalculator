@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="calculator">
+            <div class="header">
+                <h1>Calculator</h1>
+            </div>
+            
+            <div class="display">
+                <input type="text" id="display" readonly placeholder="0">
+            </div>
+            
+            <div class="buttons">
+                <button class="btn btn-function" onclick="appendToDisplay('(')">（</button>
+                <button class="btn btn-function" onclick="appendToDisplay(')')">）</button>
+                <button class="btn btn-function" onclick="clearDisplay()">C</button>
+                <button class="btn btn-function" onclick="deleteLastChar()">⌫</button>
+                
+                <button class="btn btn-number" onclick="appendToDisplay('7')">7</button>
+                <button class="btn btn-number" onclick="appendToDisplay('8')">8</button>
+                <button class="btn btn-number" onclick="appendToDisplay('9')">9</button>
+                <button class="btn btn-operator" onclick="appendToDisplay('/')">÷</button>
+                
+                <button class="btn btn-number" onclick="appendToDisplay('4')">4</button>
+                <button class="btn btn-number" onclick="appendToDisplay('5')">5</button>
+                <button class="btn btn-number" onclick="appendToDisplay('6')">6</button>
+                <button class="btn btn-operator" onclick="appendToDisplay('*')">×</button>
+                
+                <button class="btn btn-number" onclick="appendToDisplay('1')">1</button>
+                <button class="btn btn-number" onclick="appendToDisplay('2')">2</button>
+                <button class="btn btn-number" onclick="appendToDisplay('3')">3</button>
+                <button class="btn btn-operator" onclick="appendToDisplay('-')">−</button>
+                
+                <button class="btn btn-number btn-zero" onclick="appendToDisplay('0')">0</button>
+                <button class="btn btn-number" onclick="appendToDisplay('.')">.</button>
+                <button class="btn btn-operator" onclick="appendToDisplay('+')">+</button>
+                <button class="btn btn-equals" onclick="calculate()">=</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const displayInput = document.getElementById('display');
+
+        function appendToDisplay(value) {
+            if (displayInput.value === '0' && value !== '.') {
+                displayInput.value = value;
+            } else {
+                displayInput.value += value;
+            }
+        }
+
+        function clearDisplay() {
+            displayInput.value = '0';
+        }
+
+        function deleteLastChar() {
+            displayInput.value = displayInput.value.slice(0, -1);
+            if (displayInput.value === '') {
+                displayInput.value = '0';
+            }
+        }
+
+        function calculate() {
+            const expression = displayInput.value;
+            
+            if (expression === '0' || expression === '') {
+                return;
+            }
+
+            fetch('/calculate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ expression: expression })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    displayInput.value = 'Error';
+                } else {
+                    displayInput.value = data.result;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                displayInput.value = 'Error';
+            });
+        }
+
+        // Allow keyboard input
+        document.addEventListener('keydown', (event) => {
+            const key = event.key;
+            if (key >= '0' && key <= '9') {
+                appendToDisplay(key);
+            } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+                appendToDisplay(key);
+            } else if (key === '.' || key === ',') {
+                appendToDisplay('.');
+            } else if (key === 'Enter') {
+                event.preventDefault();
+                calculate();
+            } else if (key === 'Backspace') {
+                event.preventDefault();
+                deleteLastChar();
+            } else if (key === 'Escape' || key === 'c' || key === 'C') {
+                clearDisplay();
+            } else if (key === '(' || key === ')') {
+                appendToDisplay(key);
+            }
+        });
+    </script>
+</body>
+</html>

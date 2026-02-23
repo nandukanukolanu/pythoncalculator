@@ -1,0 +1,169 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 500px;
+}
+
+.calculator {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    width: 100%;
+    max-width: 400px;
+}
+
+.header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px 20px;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: 2px;
+}
+
+.display {
+    background: #f5f5f5;
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+#display {
+    width: 100%;
+    padding: 20px;
+    font-size: 32px;
+    font-weight: 300;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    background: white;
+    text-align: right;
+    color: #333;
+    transition: border-color 0.3s ease;
+}
+
+#display:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    padding: 20px;
+    background: #fafafa;
+}
+
+.btn {
+    padding: 20px;
+    font-size: 20px;
+    font-weight: 500;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn:active {
+    transform: scale(0.95);
+}
+
+.btn-number {
+    background: white;
+    color: #333;
+    border: 2px solid #e0e0e0;
+    font-size: 24px;
+}
+
+.btn-number:hover {
+    background: #f0f0f0;
+    border-color: #667eea;
+}
+
+.btn-operator {
+    background: #667eea;
+    color: white;
+    border: 2px solid #667eea;
+    font-size: 24px;
+}
+
+.btn-operator:hover {
+    background: #5568d3;
+    border-color: #5568d3;
+}
+
+.btn-function {
+    background: #764ba2;
+    color: white;
+    border: 2px solid #764ba2;
+    font-size: 18px;
+}
+
+.btn-function:hover {
+    background: #6a3f94;
+    border-color: #6a3f94;
+}
+
+.btn-equals {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: 2px solid #667eea;
+    font-size: 24px;
+    font-weight: bold;
+    grid-column: span 2;
+}
+
+.btn-equals:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-zero {
+    grid-column: span 2;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: 28px;
+    }
+    
+    #display {
+        font-size: 28px;
+        padding: 15px;
+    }
+    
+    .btn {
+        padding: 18px;
+        font-size: 18px;
+    }
+    
+    .buttons {
+        gap: 8px;
+        padding: 15px;
+    }
+}
