@@ -40,14 +40,27 @@
                 
                 <button class="btn btn-number btn-zero" onclick="appendToDisplay('0')">0</button>
                 <button class="btn btn-number" onclick="appendToDisplay('.')">.</button>
+                <button class="btn btn-operator" onclick="calculatePercentage()">%</button>
                 <button class="btn btn-operator" onclick="appendToDisplay('+')">+</button>
+                
                 <button class="btn btn-equals" onclick="calculate()">=</button>
+            </div>
+        </div>
+
+        <div class="history-panel">
+            <div class="history-header">
+                <h2>History</h2>
+                <button class="clear-history-btn" onclick="clearHistory()">Clear</button>
+            </div>
+            <div class="history-list" id="history">
+                <p class="empty-history">No calculations yet</p>
             </div>
         </div>
     </div>
 
     <script>
         const displayInput = document.getElementById('display');
+        const historyContainer = document.getElementById('history');
 
         function appendToDisplay(value) {
             if (displayInput.value === '0' && value !== '.') {
@@ -88,6 +101,7 @@
                     displayInput.value = 'Error';
                 } else {
                     displayInput.value = data.result;
+                    updateHistory();
                 }
             })
             .catch(error => {
@@ -95,6 +109,69 @@
                 displayInput.value = 'Error';
             });
         }
+
+        function calculatePercentage() {
+            const value = displayInput.value;
+            
+            if (!value || value === '0') {
+                return;
+            }
+
+            fetch('/percentage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ value: value })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    displayInput.value = 'Error';
+                } else {
+                    displayInput.value = data.result;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                displayInput.value = 'Error';
+            });
+        }
+
+        function updateHistory() {
+            fetch('/history', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const history = data.history;
+                if (history.length === 0) {
+                    historyContainer.innerHTML = '<p class="empty-history">No calculations yet</p>';
+                } else {
+                    historyContainer.innerHTML = history.map(item => `
+                        <div class="history-item" onclick="displayResult('${item.result}')">
+                            <div class="history-expression">${item.expression}</div>
+                            <div class="history-result">${item.result}</div>
+                        </div>
+                    `).join('');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function displayResult(result) {
+            displayInput.value = result;
+        }
+
+        function clearHistory() {
+            historyContainer.innerHTML = '<p class="empty-history">No calculations yet</p>';
+        }
+
+        // Load history on page load
+        window.addEventListener('load', updateHistory);
 
         // Allow keyboard input
         document.addEventListener('keydown', (event) => {
@@ -115,6 +192,9 @@
                 clearDisplay();
             } else if (key === '(' || key === ')') {
                 appendToDisplay(key);
+            } else if (key === '%') {
+                event.preventDefault();
+                calculatePercentage();
             }
         });
     </script>

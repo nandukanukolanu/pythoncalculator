@@ -1,7 +1,11 @@
 from flask import Flask, render_template, request, jsonify
 import math
+from collections import deque
 
 app = Flask(__name__)
+
+# Store calculation history (last 5 calculations)
+calculation_history = deque(maxlen=5)
 
 def safe_eval(expression):
     """Safely evaluate mathematical expressions"""
@@ -15,6 +19,21 @@ def safe_eval(expression):
         # Evaluate the expression
         result = eval(expression)
         return round(result, 10)  # Round to avoid floating point errors
+    except:
+        return None
+
+def calculate_percentage(value, percentage=None):
+    """Calculate percentage. If percentage is None, return value as percentage (value/100)
+    Otherwise return percentage% of value"""
+    try:
+        value = float(value)
+        if percentage is None:
+            # Return value as percentage (divide by 100)
+            return round(value / 100, 10)
+        else:
+            # Return percentage% of value
+            percentage = float(percentage)
+            return round((percentage / 100) * value, 10)
     except:
         return None
 
@@ -35,7 +54,36 @@ def calculate():
     if result is None:
         return jsonify({'error': 'Invalid expression'}), 400
     
+    # Add to history
+    history_item = {
+        'expression': expression,
+        'result': result
+    }
+    calculation_history.append(history_item)
+    
     return jsonify({'result': result})
+
+@app.route('/percentage', methods=['POST'])
+def percentage():
+    data = request.get_json()
+    value = data.get('value', '')
+    percentage = data.get('percentage')
+    
+    if not value:
+        return jsonify({'error': 'Empty value'}), 400
+    
+    result = calculate_percentage(value, percentage)
+    
+    if result is None:
+        return jsonify({'error': 'Invalid calculation'}), 400
+    
+    return jsonify({'result': result})
+
+@app.route('/history', methods=['GET'])
+def get_history():
+    # Return history in reverse order (most recent first)
+    history_list = list(reversed(calculation_history))
+    return jsonify({'history': history_list})
 
 @app.route('/clear', methods=['POST'])
 def clear():
