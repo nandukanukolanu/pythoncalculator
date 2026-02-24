@@ -1,7 +1,11 @@
 docker build -t adithyanandini/calculator:1.2 .
 docker push adithyanandini/calculator:1.2
-docker run -d -p 80:5000 --name calculator -e BG_COLOR="linear-gradient(135deg, #FF6B9D 0%, #C44569 100%)" adithyanandini/calculator:1.2
-BG_COLOR = "linear-gradient(135deg, #FF6B9D 0%, #C44569 100%)
 
-linear-gradient(135deg, #48a9b2 0%, #45c44b 100%)
-#2596be
+# Pink Theme (Default)
+docker run -d -p 80:5000 --name calculator -e BG_COLOR="linear-gradient(135deg, #FF6B9D 0%, #C44569 100%)" adithyanandini/calculator:1.2
+
+# Green & Purple Theme
+docker run -d -p 80:5000 --name calculator -e BG_COLOR="linear-gradient(135deg, #5ab248 0%, #5e45c4 100%)" adithyanandini/calculator:1.2
+
+# Blue Theme
+docker run -d -p 80:5000 --name calculator -e BG_COLOR="#2596be" adithyanandini/calculator:1.2
