@@ -1,11 +1,22 @@
 from flask import Flask, render_template, request, jsonify
 import math
 from collections import deque
+import os
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 app = Flask(__name__)
 
 # Store calculation history (last 5 calculations)
 calculation_history = deque(maxlen=5)
+
+# Background color configuration from environment variables
+DEFAULT_BG_COLOR = "linear-gradient(135deg, #FF6B9D 0%, #C44569 100%)"
+BG_COLOR = os.getenv('BG_COLOR', DEFAULT_BG_COLOR)
 
 def safe_eval(expression):
     """Safely evaluate mathematical expressions"""
@@ -40,6 +51,11 @@ def calculate_percentage(value, percentage=None):
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/config', methods=['GET'])
+def get_config():
+    """Return background color configuration"""
+    return jsonify({'backgroundColor': BG_COLOR})
 
 @app.route('/calculate', methods=['POST'])
 def calculate():
@@ -90,4 +106,4 @@ def clear():
     return jsonify({'status': 'cleared'})
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=False, host='0.0.0.0', port=5000)
